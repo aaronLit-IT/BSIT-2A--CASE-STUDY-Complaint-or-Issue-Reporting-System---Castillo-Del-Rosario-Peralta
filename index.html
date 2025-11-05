@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Pasig Catholic College — Role Select</title>
+  <style>
+    
+    html,body { height:100%; margin:0; font-family: Arial, Helvetica, sans-serif; }
+    body {
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      background: url('images/pcc-bg.jpeg') center/cover no-repeat;
+      background-color: #111;
+      position: relative;
+    }
+
+    .overlay {
+      position:absolute; inset:0;
+      background: rgba(200,0,0,0.55);
+      z-index:0;
+    }
+
+    .card {
+      z-index:1;
+      width:320px;
+      background: #fff;
+      border-radius:12px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.25);
+      padding:28px;
+      text-align:center;
+    }
+
+    .logo {
+      width:84px; height:84px; margin:0 auto 12px;
+      border-radius:50%;
+      background-size:cover;
+      background-position:center;
+      background-image:url('images/pcc-logo.png');
+    }
+
+    h1 { margin:0 0 6px; font-size:20px; color:#b30000; }
+    p { margin:0 0 18px; color:#333; }
+
+    .btn {
+      display:block;
+      width:100%;
+      padding:10px 12px;
+      margin:10px 0;
+      border-radius:22px;
+      border:2px solid #b30000;
+      background: #b30000;
+      color:#fff;
+      font-weight:700;
+      cursor:pointer;
+      transition:all .15s ease;
+    }
+    .btn:hover { background:#fff; color:#b30000; }
+
+    .btn.admin { background:#222; border-color:#222; }
+    .btn.admin:hover { background:#fff; color:#222; }
+
+    .small { font-size:12px; color:#666; margin-top:10px; }
+  </style>
+</head>
+<body>
+  <div class="overlay"></div>
+
+  <div class="card">
+    <div class="logo" id="logoPlaceholder"></div>
+    <h1>Pasig Catholic College</h1>
+    <p>Complaint & Issue Reporting System</p>
+
+    <button class="btn" onclick="chooseRole('student')">LOGIN AS STUDENT </button>
+    <button class="btn admin" onclick="chooseRole('admin')">LOGIN AS ADMIN</button>
+
+    <div class="small">Select role, then proceed to login screen.</div>
+  </div>
+
+  <script>
+    function chooseRole(role) {
+      localStorage.setItem('pccRole', role);
+      window.location.href = 'system.html';
+    }
+  </script>
+</body>
+</html>
