@@ -74,6 +74,8 @@
   </header>
 
   <div class="wrap">
+    
+    <
     <div id="loginCard" class="card">
       <h1>Login</h1>
       <div id="roleInfo" style="color:var(--muted); margin-bottom:8px;"></div>
@@ -116,7 +118,7 @@
         <button type="button" onclick="setPriority(true)">Yes</button>
         <button type="button" onclick="setPriority(false)">No</button>
       </div>
-      <div id="priorityMessage">⚠ You have marked this complaint as High Priority. This means your concern is considered serious and requires immediate attention from the administration. Please make sure all details are accurate and clearly stated before submitting.</div>
+      <div id="priorityMessage">⚠ High Priority selected. Please ensure details are correct.</div>
 
       <label>Complaint / Issue</label>
       <textarea id="issue" placeholder="Describe the issue..."></textarea>
@@ -173,15 +175,17 @@
   </div>
 
 <script>
+
 const STORAGE_KEY = 'pcc_complaints_v1';
 let reports = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
 let editIndex = -1;
-let chosenPriority = 'No';
+let chosenPriority = 'Normal';
 
 
 const chosenRole = localStorage.getItem('pccRole');
 if (!chosenRole) location.href = 'index.html';
-document.getElementById('roleInfo').textContent = 'Welcome! You’ve selected the ' + (chosenRole === 'student' ? 'Student Account' : 'Admin Account') + '.';
+document.getElementById('roleInfo').textContent = 
+  'Welcome! You’ve selected the ' + (chosenRole === 'student' ? 'Student Account' : 'Admin Account') + '.';
 
 
 const loginCard = document.getElementById('loginCard');
@@ -191,7 +195,9 @@ const adminCard = document.getElementById('adminCard');
 const priorityMsg = document.getElementById('priorityMessage');
 
 
-function generateRefNumber() { return 'REF-' + Math.floor(100000 + Math.random() * 900000); }
+function generateRefNumber() { 
+  return 'REF-' + Math.floor(100000 + Math.random() * 900000); 
+}
 function setNewFormRefAndDate() {
   document.getElementById('refNumber').value = generateRefNumber();
   document.getElementById('dateField').value = new Date().toLocaleString();
@@ -211,6 +217,7 @@ function doLogin() {
   if (!user || !pass) { alert('Please enter username and password.'); return; }
 
   loginCard.classList.add('hidden');
+
   if (chosenRole === 'student') {
     studentCard.classList.remove('hidden');
     studentListCard.classList.remove('hidden');
@@ -231,7 +238,10 @@ function saveComplaint() {
   const date = document.getElementById('dateField').value;
   const urgency = chosenPriority;
 
-  if (!name || !studentNumber || !subject || !issue) { alert('Please fill out all fields.'); return; }
+  if (!name || !studentNumber || !subject || !issue) { 
+    alert('Please fill out all fields.'); 
+    return; 
+  }
 
   if (editIndex === -1) {
     reports.push({ ref, name, studentNumber, subject, urgency, issue, status: 'Pending', remarks: '', date });
@@ -261,6 +271,7 @@ function saveComplaint() {
 function displayStudentTable() {
   const tbody = document.querySelector('#studentTable tbody');
   tbody.innerHTML = '';
+
   reports.forEach((r, idx) => {
     const tr = document.createElement('tr');
     tr.innerHTML = `
@@ -280,6 +291,41 @@ function displayStudentTable() {
   });
 }
 
+
+function searchStudentTable() {
+  const search = document.getElementById('searchStudent').value.trim().toLowerCase();
+  const tbody = document.querySelector('#studentTable tbody');
+  tbody.innerHTML = '';
+
+  const filtered = reports.filter(r =>
+    r.ref.toLowerCase().includes(search)
+  );
+
+  filtered.forEach(r => {
+    const idx = reports.indexOf(r);
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td>${r.ref}</td>
+      <td>${escapeHtml(r.name)}</td>
+      <td>${escapeHtml(r.studentNumber)}</td>
+      <td>${escapeHtml(r.subject)}</td>
+      <td>${escapeHtml(r.urgency)}</td>
+      <td>${escapeHtml(r.issue)}</td>
+      <td>${escapeHtml(r.status)}</td>
+      <td>${escapeHtml(r.remarks)}</td>
+      <td class="actionBtns">
+        <button onclick="loadForEdit(${idx})">Edit</button>
+        <button onclick="deleteComplaint(${idx})">Delete</button>
+      </td>`;
+    tbody.appendChild(tr);
+  });
+
+  if (filtered.length === 0) {
+    tbody.innerHTML = `<tr><td colspan="9" style="text-align:center;color:#777;">No results found</td></tr>`;
+  }
+}
+
+/* ADMIN TABLE DISPLAY */
 function displayAdminTable(filteredList) {
   const list = filteredList || reports;
   const tbody = document.querySelector('#adminTable tbody');
@@ -302,7 +348,8 @@ function displayAdminTable(filteredList) {
         </select>
       </td>
       <td><textarea id="remark-${realIndex}" rows="2">${escapeHtml(r.remarks)}</textarea></td>
-      <td><button onclick="applyRemark(${realIndex})">Save Remark</button> <button onclick="deleteComplaint(${realIndex})">Delete</button></td>
+      <td><button onclick="applyRemark(${realIndex})">Save Remark</button> 
+          <button onclick="deleteComplaint(${realIndex})">Delete</button></td>
     `;
     tbody.appendChild(tr);
   });
@@ -314,11 +361,14 @@ function applyRemark(index) {
   saveToStorage();
   displayStudentTable();
 }
+
+
 function changeStatus(index, value) {
   reports[index].status = value;
   saveToStorage();
   displayStudentTable();
 }
+
 
 function filterAdminTable() {
   const cat = document.getElementById('filterCategory').value.trim().toLowerCase();
@@ -330,10 +380,10 @@ function filterAdminTable() {
   }
 
   const filtered = reports.filter(r => {
-    const subject = (r.subject || '').toString().toLowerCase();
-    const urgency = (r.urgency || '').toString().toLowerCase();
-    const issue = (r.issue || '').toString().toLowerCase();
-    const name = (r.name || '').toString().toLowerCase();
+    const subject = (r.subject || '').toLowerCase();
+    const urgency = (r.urgency || '').toLowerCase();
+    const issue = (r.issue || '').toLowerCase();
+    const name = (r.name || '').toLowerCase();
 
     const matchCat = cat ? subject.includes(cat) : true;
     const matchUrg = urg ? (urgency.includes(urg) || issue.includes(urg) || name.includes(urg)) : true;
@@ -349,9 +399,10 @@ function clearForm() {
   document.getElementById('studentNumber').value = '';
   document.getElementById('subject').value = '';
   document.getElementById('issue').value = '';
-  chosenPriority = 'No';
+  chosenPriority = 'Normal';
   priorityMsg.style.display = 'none';
 }
+
 function deleteComplaint(index) {
   if (!confirm('Delete this complaint?')) return;
   reports.splice(index, 1);
@@ -359,6 +410,7 @@ function deleteComplaint(index) {
   displayStudentTable();
   displayAdminTable();
 }
+
 function loadForEdit(index) {
   const r = reports[index];
   document.getElementById('refNumber').value = r.ref;
@@ -372,17 +424,23 @@ function loadForEdit(index) {
   editIndex = index;
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
+
 function saveToStorage() { localStorage.setItem(STORAGE_KEY, JSON.stringify(reports)); }
 function logout() { localStorage.removeItem('pccRole'); location.href = 'index.html'; }
 function goBack() { location.href = 'index.html'; }
+
 function escapeHtml(str) {
-  return str ? String(str).replace(/[&<>"']/g, s => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[s])) : '';
+  return str ? String(str).replace(/[&<>"']/g, s => ({
+    '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'
+  }[s])) : '';
 }
+
 
 (function initOnLoad() {
   displayStudentTable();
   displayAdminTable();
 })();
 </script>
+
 </body>
 </html>
